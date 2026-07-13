@@ -22,11 +22,12 @@ function Contact() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+
     setLoading(true);
     setStatus("Sending message...");
 
     try {
-      const response = await fetch("http://localhost:5000/contact", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,19 +36,22 @@ function Contact() {
       });
 
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Message failed.");
+      }
+
       setStatus(data.message);
 
-      if (data.success) {
-        setFormData({
-          name: "",
-          email: "",
-          subject: "",
-          message: "",
-        });
-      }
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
     } catch (error) {
       console.error(error);
-      setStatus("Server connection failed.");
+      setStatus("Message failed. Please try again.");
     } finally {
       setLoading(false);
     }

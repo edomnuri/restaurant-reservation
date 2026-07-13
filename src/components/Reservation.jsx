@@ -23,41 +23,45 @@ function Reservation() {
     });
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
-    setLoading(true);
-    setStatus("Sending reservation...");
+ async function handleSubmit(event) {
+  event.preventDefault();
 
-    try {
-      const response = await fetch("http://localhost:5000/reservation", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+  setLoading(true);
+  setStatus("Submitting reservation...");
 
-      const data = await response.json();
-      setStatus(data.message);
+  try {
+    const response = await fetch("/api/reservation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
 
-      if (data.success) {
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          date: "",
-          time: "",
-          guests: "",
-          message: "",
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      setStatus("Server connection failed. Please try again.");
-    } finally {
-      setLoading(false);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Reservation failed.");
     }
+
+    setStatus(data.message);
+
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      date: "",
+      time: "",
+      guests: "",
+      message: "",
+    });
+  } catch (error) {
+    console.error(error);
+    setStatus("Reservation failed. Please try again.");
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <section className="reservation-page py-5">
@@ -69,8 +73,7 @@ function Reservation() {
                 <p className="reservation-small-title">Book Your Table</p>
                 <h1>Make a Reservation</h1>
                 <p className="text-muted">
-                  Complete the form below and we will receive your reservation
-                  request by email.
+                  Complete the form below to submit your reservation request.
                 </p>
               </div>
 
@@ -210,9 +213,7 @@ function Reservation() {
                     className={`reservation-status mt-4 ${
                       status.includes("successfully")
                         ? "status-success"
-                        : status.includes("Sending")
-                          ? "status-sending"
-                          : "status-error"
+                        : "status-sending"
                     }`}
                   >
                     {status}
