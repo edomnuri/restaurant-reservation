@@ -27,13 +27,18 @@ function Contact() {
     setStatus("Sending message...");
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+     const response = await fetch(
+  import.meta.env.PROD
+    ? "/api/contact"
+    : "http://localhost:5000/contact",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  }
+);
 
       const data = await response.json();
 

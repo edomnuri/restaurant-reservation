@@ -30,13 +30,18 @@ function Reservation() {
   setStatus("Submitting reservation...");
 
   try {
-    const response = await fetch("/api/reservation", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    const response = await fetch(
+  import.meta.env.PROD
+    ? "/api/reservation"
+    : "http://localhost:5000/reservation",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  }
+);
 
     const data = await response.json();
 
